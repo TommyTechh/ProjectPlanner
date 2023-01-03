@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, ParseUUIDPipe, Post, ValidationPipe } from '@nestjs/common';
 import { Delete, Param, Patch } from '@nestjs/common/decorators';
 import { TaskDto } from './dto/task.dto';
 import { updateDescriptionDto } from './dto/updateDescription.dto';
@@ -15,7 +15,7 @@ export class TaskController {
     }
 
     @Get('/:id')
-    async getTask(@Param() id: string){
+    async getTask(@Param('id', new ParseUUIDPipe()) id: string){
         return await this.taskService.getTask(id);
 
     }
@@ -28,12 +28,12 @@ export class TaskController {
     }
 
     @Patch()
-    async updateDescription(@Body() {description}: updateDescriptionDto, @Param() id: string){
+    async updateDescription(@Body() {description}: updateDescriptionDto, @Param('id', new ParseUUIDPipe()) id: string){
         return await this.taskService.updateDesription(id, description)
     }
 
     @Delete('/:id')
-    async deleteTask(@Param() id: string){
+    async deleteTask(@Param('id', new ParseUUIDPipe()) id: string){
         return await this.taskService.deleteTask(id)
          
     }
