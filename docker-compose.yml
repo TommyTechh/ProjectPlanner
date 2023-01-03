@@ -9,4 +9,10 @@ services:
       POSTGRES_DB: projectplanner
     ports:
      - 5432:5432
-    
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
