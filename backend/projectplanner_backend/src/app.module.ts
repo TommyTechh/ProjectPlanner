@@ -9,7 +9,7 @@ import { TaskModule } from "./task/task.module";
     imports: [
         ConfigModule.forRoot({isGlobal: true}),
         TypeOrmModule.forRootAsync({
-            inject:[ConfigService],
+            inject:[ConfigService],   //uses configService to access .env file so we can use secrets.
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
                 host: configService.get<string>('DB_HOST'),
@@ -18,7 +18,7 @@ import { TaskModule } from "./task/task.module";
                 password: configService.get<string>('DB_PASSWORD'),
                 database: configService.get<string>('DB_NAME'),
                 entities: [Task, Tag, User],
-                synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
+                synchronize: false, //set to .env variable if we want to generate tables application launch everytime.
                 logging: configService.get<boolean>('DB_LOGGING')
             })
           }),
