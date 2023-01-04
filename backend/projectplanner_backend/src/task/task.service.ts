@@ -27,8 +27,6 @@ export class TaskService {
 
     async createTask(task: TaskDto): Promise<void>{
         await this.taskRepository.save(task);
-
-
     }
 
     async updateDesription(id: string, description: string){

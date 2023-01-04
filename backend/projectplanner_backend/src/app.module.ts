@@ -4,6 +4,8 @@ import { ConfigService } from "@nestjs/config/dist";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Tag, Task, User } from "./task/entity/task";
 import { TaskModule } from "./task/task.module";
+import { UserAuthController } from "./user_auth/user_auth.controller";
+import { UserAuthModule } from "./user_auth/user_auth.module";
 
 @Module({
     imports: [
@@ -18,11 +20,11 @@ import { TaskModule } from "./task/task.module";
                 password: configService.get<string>('DB_PASSWORD'),
                 database: configService.get<string>('DB_NAME'),
                 entities: [Task, Tag, User],
-                synchronize: false, //set to .env variable if we want to generate tables application launch everytime.
+                synchronize: true, //set to false if we wanna use migrations.
                 logging: configService.get<boolean>('DB_LOGGING')
             })
           }),
-        TaskModule
+        TaskModule, UserAuthModule
     ],
 })
 export class AppModule{}

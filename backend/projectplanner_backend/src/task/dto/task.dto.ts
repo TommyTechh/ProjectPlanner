@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { IsNotEmpty, IsString, IsArray, ValidateNested } from "class-validator";
+import { UserDto } from "src/user_auth/dto/user.dto";
 
 export class TaskDto{
     @IsNotEmpty()
@@ -29,10 +30,4 @@ export class TagsDto{
     @IsString()
     name: string;
 
-}
-
-export class UserDto{
-    username: string;
-    password: string;
-    image: string;
 }
