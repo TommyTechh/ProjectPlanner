@@ -2,8 +2,9 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ConfigService } from "@nestjs/config/dist";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Tag, Task, User } from "./task/entity/task";
+import { Tag, Task} from "./task/entity/task";
 import { TaskModule } from "./task/task.module";
+import { User } from "./user_auth/entity/user";
 import { UserAuthController } from "./user_auth/user_auth.controller";
 import { UserAuthModule } from "./user_auth/user_auth.module";
 

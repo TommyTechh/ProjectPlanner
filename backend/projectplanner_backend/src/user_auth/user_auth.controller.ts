@@ -20,6 +20,7 @@ export class UserAuthController {
         return await this.userauthService.loginUser(loginDto)
     }
 
+    @Post('/refreshtoken')
     async refreshToken(@Body() {refreshToken}: RefreshTokenDto){
         return await this.userauthService.refreshToken(refreshToken);
     }

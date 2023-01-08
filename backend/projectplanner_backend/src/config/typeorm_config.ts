@@ -1,8 +1,10 @@
 import { ConfigService } from "@nestjs/config";
-import { config } from "dotenv";
+import { config } from "dotenv"
 import { initialSchema1672810153327 } from "src/migrations/1672810153327-initialSchema";
-import { Task, Tag, User } from "src/task/entity/task";
+import { Task, Tag} from "src/task/entity/task";
+import { User } from "src/user_auth/entity/user";
 import { DataSource } from "typeorm";
+
 
 config();
 

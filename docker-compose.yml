@@ -1,18 +1,35 @@
 version: '3.4'
 
 services:
-  postgres:
+  db:
     image: postgres:12-alpine
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USERNAME: postgres
       POSTGRES_DB: projectplanner
-    ports:
-     - 5432:5432
+    networks:
+     - app
   adminer:
     image: adminer
     restart: always
     depends_on:
-      - postgres
+      - db
     ports:
-      - 8080:8080
+     - 8080:8080
+    networks:
+     - app
+  backend:
+    build:
+      context: ./backend/projectplanner_backend
+      dockerfile: Dockerfile
+      target: development
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+      - adminer
+    networks:
+     - app
+networks:
+ app:
