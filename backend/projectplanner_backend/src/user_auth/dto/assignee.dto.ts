@@ -1,9 +1,8 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class UserDto{
-    @IsNotEmpty()
+export class AssigneeDto{
+    
     @IsString()
     username: string;
-    @IsString()
-    avatar: string;
+    
 }

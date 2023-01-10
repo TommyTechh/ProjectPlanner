@@ -1,4 +1,6 @@
+import { Exclude } from "class-transformer";
 import { Task } from "src/task/entity/task";
+import { TaskModule } from "src/task/task.module";
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
@@ -8,10 +10,13 @@ export class User{
     id: string;
     @Column()
     username: string;
+    @Exclude()
     @Column()
     password: string;
-    @Column()
-    image: string;
-    @ManyToOne(() => Task, task => task.assignees)
-    task: Task;
+    @Column({nullable: true})
+    avatar: string;
+    @OneToMany(() => Task, task => task.owner)
+    taskOwner: Task[];
+    @ManyToMany(() => Task, task => task.assignees)
+    taskAssignee: Task[];
 }

@@ -1,22 +1,38 @@
 import { User } from "src/user_auth/entity/user";
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name: 'task'})
 export class Task{
    
     @PrimaryGeneratedColumn('uuid')
     id: string;
-    @Column()
+    
+    @Column({unique:true})
     title: string;
     @Column()
     description: string;
     @Column()
     image: string;
-    @OneToMany(() => Tag, Tag => Tag.task, {cascade: true, eager: true})
+    @OneToMany(() => Tag, Tag => Tag.task, {eager: true})
     tags: Tag[]
     @Column()
     status: boolean;
-    @OneToMany(() => User, User => User.task, {cascade: true, eager: true})
+
+    @ManyToOne(() => User, User => User.taskOwner, {eager:true})
+    owner: User
+
+    @ManyToMany(() => User, User => User.taskAssignee)
+    @JoinTable({
+        name: "task_assignees", // table name for the junction table of this relation
+        joinColumn: {
+            name: "task",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: {
+            name: "user",
+            referencedColumnName: "id"
+        }
+    })
     assignees: User[];
 }
 

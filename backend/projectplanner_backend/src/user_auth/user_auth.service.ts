@@ -5,8 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcrypt';
 import { Repository } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
-import { UserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/createuser.dto';
 import { User } from './entity/user';
+import { UserDto } from './dto/user.dto';
 
 
 export interface JWTToken{
@@ -24,8 +25,12 @@ export class UserAuthService {
     private configService: ConfigService) {}
 
 
+    
+    async getUsers(): Promise<User[]> {
+        return this.userauthRepository.find();
+    }
 
-    async createUser(userDto: UserDto){
+    async createUser(userDto: CreateUserDto){
         const userExists = await this.userauthRepository.findOne({where: {username: userDto.username}})
         if(userExists){
             throw new HttpException('Username is taken', 400)
@@ -73,6 +78,22 @@ export class UserAuthService {
         }
     }
 
+
+    async uploadAvatar(file: Express.Multer.File, id: string, userName: string ){
+
+        const user = await this.userauthRepository.findOneOrFail({
+            where: {id},
+        });
+
+        if (user.username !== userName){
+            throw new HttpException(
+                "You can't upload files to other users", 400
+            )
+        }
+        
+
+    }
+
     private hashPassword(password: string): Promise<string>{
 
         return hash(password, 5)
@@ -82,17 +103,18 @@ export class UserAuthService {
     private async getJWTToken(user: User): Promise<JWTToken>{
         const[token, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
-                {sub: user.username},
+                { sub: user.username },
                 {secret: this.configService.get<string>('JWT_TOKEN_SECRET'),
-                expiresIn: this.configService.get<string>('JWT_TOKEN_EXPIRE')}),
+                expiresIn: this.configService.get<string>('JWT_TOKEN_EXPIRE'),},),
                 this.jwtService.signAsync(
-                    {sub: user.username},
+                    { sub: user.username },
                     {secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-                    expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE')}),
+                    expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE'),},),
 
         ])
         return {token, refreshToken}
-
     }
+
+    
 
     }
