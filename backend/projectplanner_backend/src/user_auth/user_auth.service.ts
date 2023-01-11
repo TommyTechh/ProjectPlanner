@@ -7,8 +7,6 @@ import { Repository } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from './dto/createuser.dto';
 import { User } from './entity/user';
-import { UserDto } from './dto/user.dto';
-
 
 export interface JWTToken{
     token: string,
@@ -62,6 +60,8 @@ export class UserAuthService {
 
     }
 
+
+    
     async refreshToken(token: string): Promise<JWTToken>{
         try{
             const {sub: username} = await this.jwtService.verifyAsync(token, {
@@ -79,19 +79,13 @@ export class UserAuthService {
     }
 
 
-    async uploadAvatar(file: Express.Multer.File, id: string, userName: string ){
+    async setAvatar(id: string, avatar:string, userName: string){
 
         const user = await this.userauthRepository.findOneOrFail({
             where: {id},
-        });
+        }); //want to compare existing user with req object to auth. For now doesn't work.
 
-        if (user.username !== userName){
-            throw new HttpException(
-                "You can't upload files to other users", 400
-            )
-        }
-        
-
+        await this.userauthRepository.update({id}, {avatar})
     }
 
     private hashPassword(password: string): Promise<string>{
@@ -114,7 +108,4 @@ export class UserAuthService {
         ])
         return {token, refreshToken}
     }
-
-    
-
     }

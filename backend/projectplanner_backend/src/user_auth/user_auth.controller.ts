@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors, Request } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors, Request, Response } from '@nestjs/common';
 import { CreateDateColumn } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshtoken.dto';
@@ -6,10 +6,13 @@ import { CreateUserDto } from './dto/createuser.dto';
 import { UserAuthService } from './user_auth.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
+import { v4 } from 'uuid';
 import { Observable, of } from 'rxjs';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { fileURLToPath } from 'url';
+import { User } from './entity/user';
+import path = require('path')
+import { join } from 'path';
 
 @Controller('auth')
 export class UserAuthController {
@@ -30,16 +33,29 @@ export class UserAuthController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FileInterceptor('file'))
-    @Post('/:id/avatar')
-    async uploadAvatar(
-        @UploadedFile()
-        file: Express.Multer.File,
-        @Param('id', new ParseUUIDPipe()) id: string,
-        @Request() req
-    ){
-        const { sub: username } = req;
-        await this.userauthService.uploadAvatar(file, id, username)
+    @Post('/:id/avatar/')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './upload/avatars',
+            filename: (req, file, cb) => {
+                const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + v4();  // <--- replaces whitespaces of uploaded filename and adds uuid to make it unique
+                const extension: string = path.parse(file.originalname).ext;
+
+                cb(null, `${filename}${extension}`)
+
+            }
+        })
+    }))
+    async uploadFile(@UploadedFile() file, @Param('id', new ParseUUIDPipe()) id: string, @Request() req){
+        const {sub} = req; //not sure why request opject is undefined, makes auth a problem.
+        console.log(sub)
+        return this.userauthService.setAvatar(id, file.filename, sub)
+    }
+
+
+    @Get('/avatar/:avatarname')
+    async getAvatar(@Param('avatarname') avatarname, @Response() res): Promise<any> {
+        return of(res.sendFile(join(process.cwd(), 'upload/avatars/' + avatarname)))
     }
 
     @Post('login')

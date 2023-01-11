@@ -11,17 +11,19 @@ export class Task{
     title: string;
     @Column()
     description: string;
-    @Column()
+    @Column({nullable: true})
     image: string;
-    @OneToMany(() => Tag, Tag => Tag.task, {eager: true})
+
+    @OneToMany(() => Tag, Tag => Tag.task, {eager: true, cascade:true})
     tags: Tag[]
-    @Column()
+
+    @Column({default: false})
     status: boolean;
 
     @ManyToOne(() => User, User => User.taskOwner, {eager:true})
     owner: User
 
-    @ManyToMany(() => User, User => User.taskAssignee)
+    @ManyToMany(() => User, User => User.taskAssignee, {eager:true, cascade: ["update"]})
     @JoinTable({
         name: "task_assignees", // table name for the junction table of this relation
         joinColumn: {
