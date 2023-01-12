@@ -1,5 +1,4 @@
 import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors, Request, Response } from '@nestjs/common';
-import { CreateDateColumn } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshtoken.dto';
 import { CreateUserDto } from './dto/createuser.dto';
@@ -9,10 +8,9 @@ import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
 import { Observable, of } from 'rxjs';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { fileURLToPath } from 'url';
-import { User } from './entity/user';
 import path = require('path')
 import { join } from 'path';
+
 
 @Controller('auth')
 export class UserAuthController {
@@ -30,6 +28,15 @@ export class UserAuthController {
     @Post('create')
     async create(@Body() createUserDto: CreateUserDto){
         return await this.userauthService.createUser(createUserDto)
+    }
+
+
+    @UseGuards(JwtAuthGuard)
+    @Get('me')
+    async me(@Request() req){
+        const {sub} = req.user;
+        console.log(sub)
+        return await this.userauthService.getMe(sub)
     }
 
     @UseGuards(JwtAuthGuard)

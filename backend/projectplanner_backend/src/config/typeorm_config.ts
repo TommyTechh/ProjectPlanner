@@ -1,8 +1,7 @@
 import { ConfigService } from "@nestjs/config";
 import { config } from "dotenv"
-import { initialSchema1672810153327 } from "src/migrations/1672810153327-initialSchema";
-import { Task, Tag} from "src/task/entity/task";
-import { User } from "src/user_auth/entity/user";
+import { Task, Tag} from "../../src/task/entity/task";
+import { User } from "../../src/user_auth/entity/user";
 import { DataSource } from "typeorm";
 
 
@@ -19,6 +18,6 @@ export default new DataSource({
     database: configService.get<string>('DB_NAME'),
     entities: [Task, Tag, User],
     logging: configService.get<boolean>('DB_LOGGING'),
-    migrations: [initialSchema1672810153327]
+    migrations: []
 
 });

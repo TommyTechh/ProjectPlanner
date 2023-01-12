@@ -1,4 +1,4 @@
-import { identity } from "rxjs"
+/*import { identity } from "rxjs"
 import { Task } from "src/task/entity/task"
 import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from "typeorm"
 
@@ -102,3 +102,4 @@ export class initialSchema1672810153327 implements MigrationInterface {
 
 
 }
+*/

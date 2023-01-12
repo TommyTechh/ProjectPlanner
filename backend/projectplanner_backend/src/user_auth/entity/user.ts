@@ -1,13 +1,13 @@
 import { Exclude } from "class-transformer";
-import { Task } from "src/task/entity/task";
-import { TaskModule } from "src/task/task.module";
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Task } from "../../task/entity/task";
 
 
 @Entity({name: 'user'})
 export class User{
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
     @Column()
     username: string;
     @Exclude()

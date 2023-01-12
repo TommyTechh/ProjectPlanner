@@ -1,5 +1,6 @@
-import { User } from "src/user_auth/entity/user";
+
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "../../user_auth/entity/user";
 
 @Entity({name: 'task'})
 export class Task{
@@ -9,12 +10,14 @@ export class Task{
     
     @Column({unique:true})
     title: string;
+
     @Column()
     description: string;
+    
     @Column({nullable: true})
     image: string;
 
-    @OneToMany(() => Tag, Tag => Tag.task, {eager: true, cascade:true})
+    @OneToMany(() => Tag, Tag => Tag.task, {eager: true, cascade: true})
     tags: Tag[]
 
     @Column({default: false})
@@ -47,6 +50,6 @@ export class Tag{
     @Column({type: "varchar"})
     name: string;
 
-    @ManyToOne(() => Task, task => task.tags)
+    @ManyToOne(() => Task, task => task.tags, {onDelete:"CASCADE", onUpdate:"CASCADE"})
     task: Task;
 }

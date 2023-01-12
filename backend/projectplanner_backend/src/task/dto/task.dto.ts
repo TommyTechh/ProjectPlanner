@@ -1,7 +1,6 @@
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsString, IsArray, ValidateNested, IsUUID, IsBoolean, MaxLength, MinLength } from "class-validator";
-import { AssigneeDto } from "src/user_auth/dto/assignee.dto";
-
+import { IsNotEmpty, IsString, IsArray, ValidateNested, IsUUID, IsBoolean, MaxLength, MinLength, IsOptional } from "class-validator";
+import { AssigneeDto } from "../../user_auth/dto/assignee.dto";
 
 export class TaskDto{
     @IsNotEmpty()
@@ -17,9 +16,9 @@ export class TaskDto{
     @IsArray()
     @ValidateNested()   // Validates the rules in TagsDto, requires below broilerplate code
     @Type(() => TagsDto)
-    tags: TagsDto[]
+    tags: TagsDto[];
 
-
+    @IsOptional()
     @IsArray()
     @ValidateNested()   // Validates the rules in TagsDto, requires below broilerplate code
     @Type(() => AssigneeDto)
@@ -28,6 +27,7 @@ export class TaskDto{
 
 
 export class TagsDto{
+    
     @IsNotEmpty()
     @IsString()
     name: string;

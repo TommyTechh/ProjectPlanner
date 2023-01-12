@@ -28,7 +28,12 @@ export class UserAuthService {
         return this.userauthRepository.find();
     }
 
+    async getMe(id: string): Promise<User> {
+        return this.userauthRepository.findOneOrFail({where: {id}});
+    }
+
     async createUser(userDto: CreateUserDto){
+
         const userExists = await this.userauthRepository.findOne({where: {username: userDto.username}})
         if(userExists){
             throw new HttpException('Username is taken', 400)
@@ -38,8 +43,7 @@ export class UserAuthService {
 
         await this.userauthRepository.save({
             username: userDto.username,
-            password: hashedPassword,
-            image: userDto.image
+            password: hashedPassword
         })
     }
 
@@ -97,11 +101,11 @@ export class UserAuthService {
     private async getJWTToken(user: User): Promise<JWTToken>{
         const[token, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
-                { sub: user.username },
+                { sub: user.id },
                 {secret: this.configService.get<string>('JWT_TOKEN_SECRET'),
                 expiresIn: this.configService.get<string>('JWT_TOKEN_EXPIRE'),},),
                 this.jwtService.signAsync(
-                    { sub: user.username },
+                    { sub: user.id},
                     {secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
                     expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE'),},),
 
