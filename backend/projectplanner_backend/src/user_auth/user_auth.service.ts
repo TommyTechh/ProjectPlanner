@@ -23,15 +23,17 @@ export class UserAuthService {
     private configService: ConfigService) {}
 
 
-    
+    // finds all users in user database
     async getUsers(): Promise<User[]> {
         return this.userauthRepository.find();
     }
 
-    async getMe(id: string): Promise<User> {
-        return this.userauthRepository.findOneOrFail({where: {id}});
+    //gets user based on userid
+    async getUser(userId: string): Promise<User> {
+        return this.userauthRepository.findOneOrFail({where: {userId}});
     }
 
+    //creates user and hashes password
     async createUser(userDto: CreateUserDto){
 
         const userExists = await this.userauthRepository.findOne({where: {username: userDto.username}})
@@ -47,6 +49,7 @@ export class UserAuthService {
         })
     }
 
+    //Loggs in user and returns jwt token
     async loginUser(loginDto: LoginDto){
         const {username, password} = loginDto;
         
@@ -64,15 +67,20 @@ export class UserAuthService {
 
     }
 
+    //updates user
+    async updateUser(createUserDto: CreateUserDto, sub: string){
+        await this.userauthRepository.update(sub, {...createUserDto});
+    }
 
-    
+
+    //verifies jwt token and allows the user to get a refreshed token
     async refreshToken(token: string): Promise<JWTToken>{
         try{
-            const {sub: username} = await this.jwtService.verifyAsync(token, {
+            const {sub: userId} = await this.jwtService.verifyAsync(token, {
                 secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET')
             })
             const user = await this.userauthRepository.findOneOrFail({
-                where: {username}
+                where: {userId}
             })
 
             return this.getJWTToken(user)
@@ -83,29 +91,35 @@ export class UserAuthService {
     }
 
 
-    async setAvatar(id: string, avatar:string, userName: string){
+    //Sets avatar to the user
+    async setAvatar(userId: string, avatar:string, sub: string){
 
         const user = await this.userauthRepository.findOneOrFail({
-            where: {id},
+            where: {userId},
         }); //want to compare existing user with req object to auth. For now doesn't work.
 
-        await this.userauthRepository.update({id}, {avatar})
-    }
+        if (user.userId !== sub){
+            throw new HttpException(
+                "Invalid", 400
+            )
+        }
 
+        await this.userauthRepository.update({userId}, {avatar})
+    }
+    //method to hash password, saltrounds is set to 12 but c
     private hashPassword(password: string): Promise<string>{
-
-        return hash(password, 5)
-
+        return hash(password, 12)
     }
 
+    //Gets JWT token and refreshtoken 
     private async getJWTToken(user: User): Promise<JWTToken>{
         const[token, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
-                { sub: user.id },
+                { sub: user.userId },
                 {secret: this.configService.get<string>('JWT_TOKEN_SECRET'),
                 expiresIn: this.configService.get<string>('JWT_TOKEN_EXPIRE'),},),
                 this.jwtService.signAsync(
-                    { sub: user.id},
+                    { sub: user.userId},
                     {secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
                     expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE'),},),
 

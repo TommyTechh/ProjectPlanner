@@ -17,6 +17,7 @@ describe('UserAuthController E2E Test', () => {
     await app.init();
   });
 
+  let token = ""
 
   describe('Creating users', () => {
 
@@ -29,12 +30,21 @@ describe('UserAuthController E2E Test', () => {
     }).expect(201);
   })
 
+
   it('Should fail when creating same user', () => {
 
     return request(app.getHttpServer()).post('/auth/create').send({
         username: 'user1',
         password: 'password1',
     }).expect(400);
+  })
+  
+  it('Should create a new user2', () => {
+    return request(app.getHttpServer()).post('/auth/create').send({
+      username: 'user2',
+      password: 'password1',
+  }).expect(201);
+
   })
 
   it('Should fail when username is empty', () => {
@@ -81,10 +91,15 @@ describe('Logging in', () => {
         username: 'user1',
         password: 'password1',
     }).expect(201).end((err, res) => {
-      console.log(res['_body'].token); //finds auth token
+      token = res['_body'].token; //finds auth token
+      console.log(token)
       done();
     });
   })
+  
+
+
+
 
 })
 })

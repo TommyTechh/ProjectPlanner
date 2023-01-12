@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors, Request, Response } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors, Request, Response, Patch } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshtoken.dto';
 import { CreateUserDto } from './dto/createuser.dto';
@@ -17,6 +17,7 @@ export class UserAuthController {
 
     constructor(private userauthService: UserAuthService) {}
 
+    //Gets all users
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor) //Listens to class validation on user and excludes password on get-request
     @Get()
@@ -25,20 +26,29 @@ export class UserAuthController {
     }
 
 
+    //Creates new user based on class validatio from createUserDto
     @Post('create')
     async create(@Body() createUserDto: CreateUserDto){
         return await this.userauthService.createUser(createUserDto)
     }
 
-
+    //Gets logged in user based on jwt token
     @UseGuards(JwtAuthGuard)
     @Get('me')
     async me(@Request() req){
         const {sub} = req.user;
         console.log(sub)
-        return await this.userauthService.getMe(sub)
+        return await this.userauthService.getUser(sub)
     }
 
+    //Updates current logged in user
+    @UseGuards(JwtAuthGuard)
+    @Patch('me')
+    async updateUser(@Body() createUserDto: CreateUserDto, sub: string){
+        return await this.userauthService.updateUser(createUserDto, sub)
+    }
+
+    //Uploads avatar to user
     @UseGuards(JwtAuthGuard)
     @Post('/:id/avatar/')
     @UseInterceptors(FileInterceptor('file', {
@@ -59,17 +69,19 @@ export class UserAuthController {
         return this.userauthService.setAvatar(id, file.filename, sub)
     }
 
-
+    //gets picture from folder
     @Get('/avatar/:avatarname')
     async getAvatar(@Param('avatarname') avatarname, @Response() res): Promise<any> {
         return of(res.sendFile(join(process.cwd(), 'upload/avatars/' + avatarname)))
     }
 
+    //Logs user in and returns jwt token
     @Post('login')
     async login(@Body() loginDto: LoginDto){
         return await this.userauthService.loginUser(loginDto)
     }
 
+    //If jwt token has expired it's possbible to use this endpoint to refresh it
     @Post('/refreshtoken')
     async refreshToken(@Body() {refreshToken}: RefreshTokenDto){
         return await this.userauthService.refreshToken(refreshToken);

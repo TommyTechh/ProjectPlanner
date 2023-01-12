@@ -6,7 +6,7 @@ import { Task } from "../../task/entity/task";
 @Entity({name: 'user'})
 export class User{
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    userId: string;
 
     @Column()
     username: string;

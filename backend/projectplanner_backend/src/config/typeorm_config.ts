@@ -1,8 +1,9 @@
 import { ConfigService } from "@nestjs/config";
 import { config } from "dotenv"
-import { Task, Tag} from "../../src/task/entity/task";
+import { Task} from "../../src/task/entity/task";
 import { User } from "../../src/user_auth/entity/user";
 import { DataSource } from "typeorm";
+import { Tag } from "../task/entity/tag";
 
 
 config();
