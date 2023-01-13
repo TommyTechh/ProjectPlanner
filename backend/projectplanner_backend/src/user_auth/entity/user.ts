@@ -17,6 +17,6 @@ export class User{
     avatar: string;
     @OneToMany(() => Task, task => task.owner)
     taskOwner: Task[];
-    @ManyToMany(() => Task, task => task.assignees)
+    @ManyToMany(() => Task, task => task.assignees, {onDelete: "CASCADE"})
     taskAssignee: Task[];
 }

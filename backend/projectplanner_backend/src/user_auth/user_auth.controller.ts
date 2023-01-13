@@ -44,8 +44,9 @@ export class UserAuthController {
     //Updates current logged in user
     @UseGuards(JwtAuthGuard)
     @Patch('me')
-    async updateUser(@Body() createUserDto: CreateUserDto, sub: string){
-        return await this.userauthService.updateUser(createUserDto, sub)
+    async updateUser(@Body() createUserDto: CreateUserDto, @Request() req){
+        const {sub} = req.user;
+        return await this.userauthService.updateUser(sub, createUserDto)
     }
 
     //Uploads avatar to user

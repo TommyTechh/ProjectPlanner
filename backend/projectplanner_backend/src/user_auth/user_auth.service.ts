@@ -68,8 +68,8 @@ export class UserAuthService {
     }
 
     //updates user
-    async updateUser(createUserDto: CreateUserDto, sub: string){
-        await this.userauthRepository.update(sub, {...createUserDto});
+    async updateUser(userId: string, createUserDto: CreateUserDto){
+        await this.userauthRepository.update(userId, {...createUserDto});
     }
 
 

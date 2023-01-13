@@ -10,6 +10,6 @@ export class Tag{
     @Column({type: "varchar"})
     name: string;
 
-    @ManyToOne(() => Task, task => task.tags)
+    @ManyToOne(() => Task, task => task.tags, {onDelete: "CASCADE"})
     task: Task;
 }

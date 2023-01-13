@@ -8,6 +8,7 @@ export class TaskDto{
     @IsString()
     @MinLength(2)
     @MaxLength(20)
+    
     title: string;
 
     @MaxLength(200)
