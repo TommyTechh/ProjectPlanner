@@ -32,6 +32,17 @@ export class TaskService {
         return task;
     }
 
+    async getTaskByTag (id: string, tagName: string): Promise<Task[]> {
+
+        const tasks = await this.taskRepository.find()
+        const taskWithTag = tasks.forEach(x => x.tags.find(name =tagName))
+        if(!task){
+            throw new HttpException('Task Not Found', HttpStatus.NOT_FOUND)
+        }
+
+        return task;
+    }
+
     //Filters tasks and returns tasks that the user owns
     async getOwnerTasks(userId: string): Promise<Task[]> {
 
